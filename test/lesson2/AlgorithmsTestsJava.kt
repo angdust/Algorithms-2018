@@ -2,6 +2,7 @@ package lesson2
 
 import org.junit.jupiter.api.Tag
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class AlgorithmsTestsJava : AbstractAlgorithmsTests() {
     @Test
@@ -19,6 +20,7 @@ class AlgorithmsTestsJava : AbstractAlgorithmsTests() {
     @Test
     @Tag("Normal")
     fun testLongestCommonSubstring() {
+        assertTrue { JavaAlgorithms.longestCommonSubstring("sd", "sd") == "sd" }
         longestCommonSubstring { first, second -> JavaAlgorithms.longestCommonSubstring(first, second) }
     }
 
