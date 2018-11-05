@@ -98,6 +98,40 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            sortTemperatures("input/temp_in2.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in3.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                    1.0
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in4.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                    -10.0
+                    -10.0
+                    -10.0
+                    -10.0
+                    -10.0
+                    -10.0
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
 
         fun testGeneratedTemperatures(size: Int) {
             try {
@@ -113,7 +147,7 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             }
         }
         testGeneratedTemperatures(10)
-        testGeneratedTemperatures(1000)
+        testGeneratedTemperatures(500)
     }
 
     protected fun sortSequence(sortSequence: (String, String) -> Unit) {
@@ -146,6 +180,36 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                         12
                         12
                         12
+                    """.trimIndent())
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in3.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                    """.trimIndent())
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in4.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                        1
+                    """.trimIndent())
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortSequence("input/seq_in5.txt", "temp.txt")
+            assertFileContent("temp.txt",
+                    """
+                        1
+                        1
+                        1
+                        1
+                        1
                     """.trimIndent())
         } finally {
             File("temp.txt").delete()

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -102,6 +103,9 @@ public class JavaAlgorithms {
      * При сравнении подстрок, регистр символов *имеет* значение.
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
+     *
+     * Трудоемкость алгоритма: О(N*M), N, M - длины слов.
+     * Ресурсоемкость алгоритма: O(N*M).
      */
     static public String longestCommonSubstring(String first, String second) {
         int[][] table = new int[first.length() + 1][second.length() + 1];
@@ -174,9 +178,12 @@ public class JavaAlgorithms {
      * Все слова и буквы -- русские или английские, прописные.
      * В файле буквы разделены пробелами, строки -- переносами строк.
      * Остальные символы ни в файле, ни в словах не допускаются.
+     * Трудоемкость алгоритма: О(N*M + K), N*M - матрица букв; K - количество слов.
+     * Ресурсоемкость алгоритма: O(N*M + K).
+     * В не самом хорошем варианте.
      */
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws Exception {
-        ArrayList<String[]> linesOfMatrix = new ArrayList<>();
+        List<String[]> linesOfMatrix = new ArrayList<>();
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(inputName)));
         String line;
         while ((line = bufferedReader.readLine()) != null) {
@@ -213,7 +220,7 @@ public class JavaAlgorithms {
 
     static private void findWords(String[][] tableOfLetters, Boolean[][] tableOfVisitedLetters,
                                   int column, int row, String string, Set<String> words) {
-        tableOfVisitedLetters[column][row] = true; //?
+        tableOfVisitedLetters[column][row] = true;
         string = string + tableOfLetters[column][row];
         if (isWord(string, words)) {
             result.add(string);
@@ -244,6 +251,6 @@ public class JavaAlgorithms {
             }
         }
         string = string.substring(0, string.length() - 1);
-        tableOfVisitedLetters[column][row] = false; //?
+        tableOfVisitedLetters[column][row] = false;
     }
 }

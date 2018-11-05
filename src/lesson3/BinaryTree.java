@@ -108,9 +108,14 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
          * Поиск следующего элемента
          * Средняя
          */
-        private Node<T> findNext() {
-            // TODO
-            throw new NotImplementedError();
+        private Node findNext() {
+            Node parent = current;
+            Node child = null;
+            while (parent != null) {
+                child = parent;
+                parent = parent.left;
+            }
+            return child;
         }
 
         @Override

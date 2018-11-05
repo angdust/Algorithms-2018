@@ -5,6 +5,8 @@ import kotlin.NotImplementedError;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -99,6 +101,9 @@ public class JavaTasks {
      * 24.7
      * 99.5
      * 121.3
+     *
+     * Трудоемкость алгоритма: О(N).
+     * Ресурсоемкость алгоритма: O(1).
      */
     static public void sortTemperatures(String inputName, String outputName) throws Exception {
         int limit = 5000 + 2730;
@@ -149,10 +154,13 @@ public class JavaTasks {
      * 2
      * 2
      * 2
+     *
+     * Трудоемкость алгоритма: О(N).
+     * Ресурсоемкость алгоритма: O(N).
      */
     static public void sortSequence(String inputName, String outputName) throws Exception {
-        HashMap<Integer, Integer> table = new HashMap<>();
-        ArrayList<Integer> result = new ArrayList();
+        Map<Integer, Integer> table = new HashMap<>();
+        List<Integer> result = new ArrayList();
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(inputName)));
         String line;
         int minNumber = 0;
