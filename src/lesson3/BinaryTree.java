@@ -10,20 +10,7 @@ import java.util.*;
 @SuppressWarnings("WeakerAccess")
 public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
 
-    private static class Node<T> {
-        final T value;
-
-        Node<T> left = null;
-
-        Node<T> right = null;
-
-        Node(T value) {
-            this.value = value;
-        }
-    }
-
     private Node<T> root = null;
-
     private int size = 0;
 
     @Override
@@ -36,12 +23,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         Node<T> newNode = new Node<>(t);
         if (closest == null) {
             root = newNode;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             assert closest.left == null;
             closest.left = newNode;
-        }
-        else {
+        } else {
             assert closest.right == null;
             closest.right = newNode;
         }
@@ -87,52 +72,12 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         int comparison = value.compareTo(start.value);
         if (comparison == 0) {
             return start;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             if (start.left == null) return start;
             return find(start.left, value);
-        }
-        else {
+        } else {
             if (start.right == null) return start;
             return find(start.right, value);
-        }
-    }
-
-    public class BinaryTreeIterator implements Iterator<T> {
-
-        private Node<T> current = null;
-
-        private BinaryTreeIterator() {}
-
-        /**
-         * Поиск следующего элемента
-         * Средняя
-         */
-        private Node findNext() {
-            // TODO
-            throw new NotImplementedError();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return findNext() != null;
-        }
-
-        @Override
-        public T next() {
-            current = findNext();
-            if (current == null) throw new NoSuchElementException();
-            return current.value;
-        }
-
-        /**
-         * Удаление следующего элемента
-         * Сложная
-         */
-        @Override
-        public void remove() {
-            // TODO
-            throw new NotImplementedError();
         }
     }
 
@@ -147,7 +92,6 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         return size;
     }
 
-
     @Nullable
     @Override
     public Comparator<? super T> comparator() {
@@ -157,34 +101,57 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     /**
      * Для этой задачи нет тестов (есть только заготовка subSetTest), но её тоже можно решить и их написать
      * Очень сложная
+     * <p>
+     * Трудоемкость алгоритма: О(N), N - количество элементов.
+     * Ресурсоемкость алгоритма: O(N).
      */
     @NotNull
     @Override
-    public SortedSet<T> subSet(T fromElement, T toElement) {
-        // TODO
-        throw new NotImplementedError();
+    public SortedSet<T> subSet(T fromElement, T toElement) throws IllegalArgumentException, NullPointerException {
+        return subSetWithFlags(fromElement, true, toElement, false);
+    }
+
+    private SortedSet<T> subSetWithFlags(T fromElement, boolean fEIncluded, T toElement, boolean tEIncluded) {
+        SortedSet<T> result = new BinaryTree<>();
+        BinaryTreeIterator iterator = new BinaryTreeIterator();
+        if (fromElement.compareTo(toElement) == 0) throw new IllegalArgumentException();
+        while (iterator.hasNext()) {
+            T value = iterator.next();
+            if (fEIncluded && value.compareTo(fromElement) == 0)
+                result.add(value);
+            if (tEIncluded && value.compareTo(toElement) == 0)
+                result.add(value);
+            if (value.compareTo(fromElement) > 0 && value.compareTo(toElement) < 0) {
+                result.add(value);
+            }
+        }
+        return result;
     }
 
     /**
      * Найти множество всех элементов меньше заданного
      * Сложная
+     * <p>
+     * Трудоемкость алгоритма: О(N), N - количество элементов.
+     * Ресурсоемкость алгоритма: O(N).
      */
     @NotNull
     @Override
     public SortedSet<T> headSet(T toElement) {
-        // TODO
-        throw new NotImplementedError();
+        return subSetWithFlags(first(), true, toElement, false);
     }
 
     /**
      * Найти множество всех элементов больше или равных заданного
      * Сложная
+     * <p>
+     * Трудоемкость алгоритма: О(N), N - количество элементов.
+     * Ресурсоемкость алгоритма: O(N).
      */
     @NotNull
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        // TODO
-        throw new NotImplementedError();
+        return subSetWithFlags(fromElement, true, last(), true);
     }
 
     @Override
@@ -205,5 +172,73 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
             current = current.right;
         }
         return current.value;
+    }
+
+    private static class Node<T> {
+        final T value;
+
+        Node<T> left = null;
+
+        Node<T> right = null;
+
+        Node(T value) {
+            this.value = value;
+        }
+    }
+
+    public class BinaryTreeIterator implements Iterator<T> {
+
+        private Node<T> current = null;
+        private Stack<Node> stack = new Stack<>();
+
+        private BinaryTreeIterator() {
+            Node node = root;
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
+        }
+
+        /**
+         * Поиск следующего элемента
+         * Средняя
+         * Трудоемкость алгоритма: О(N), N - количество элементов.
+         * Ресурсоемкость алгоритма: O(N).
+         */
+        private Node findNext() {
+            if (stack.empty()) return null;
+            Node node = stack.pop();
+            Node result = node;
+            if (node.right != null) {
+                node = node.right;
+                while (node != null) {
+                    stack.push(node);
+                    node = node.left;
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public T next() {
+            current = findNext();
+            if (current == null) throw new NoSuchElementException();
+            return current.value;
+        }
+
+        /**
+         * Удаление следующего элемента
+         * Сложная
+         */
+        @Override
+        public void remove() {
+            // TODO
+            throw new NotImplementedError();
+        }
     }
 }
