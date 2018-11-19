@@ -101,57 +101,34 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     /**
      * Для этой задачи нет тестов (есть только заготовка subSetTest), но её тоже можно решить и их написать
      * Очень сложная
-     * <p>
-     * Трудоемкость алгоритма: О(N), N - количество элементов.
-     * Ресурсоемкость алгоритма: O(N).
      */
     @NotNull
     @Override
-    public SortedSet<T> subSet(T fromElement, T toElement) throws IllegalArgumentException, NullPointerException {
-        return subSetWithFlags(fromElement, true, toElement, false);
-    }
-
-    private SortedSet<T> subSetWithFlags(T fromElement, boolean fEIncluded, T toElement, boolean tEIncluded) {
-        SortedSet<T> result = new BinaryTree<>();
-        BinaryTreeIterator iterator = new BinaryTreeIterator();
-        if (fromElement.compareTo(toElement) == 0) throw new IllegalArgumentException();
-        while (iterator.hasNext()) {
-            T value = iterator.next();
-            if (fEIncluded && value.compareTo(fromElement) == 0)
-                result.add(value);
-            if (tEIncluded && value.compareTo(toElement) == 0)
-                result.add(value);
-            if (value.compareTo(fromElement) > 0 && value.compareTo(toElement) < 0) {
-                result.add(value);
-            }
-        }
-        return result;
+    public SortedSet<T> subSet(T fromElement, T toElement) {
+        // TODO
+        throw new NotImplementedError();
     }
 
     /**
      * Найти множество всех элементов меньше заданного
      * Сложная
-     * <p>
-     * Трудоемкость алгоритма: О(N), N - количество элементов.
-     * Ресурсоемкость алгоритма: O(N).
      */
     @NotNull
     @Override
     public SortedSet<T> headSet(T toElement) {
-        return subSetWithFlags(first(), true, toElement, false);
+        // TODO
+        throw new NotImplementedError();
     }
 
     /**
      * Найти множество всех элементов больше или равных заданного
      * Сложная
-     * <p>
-     * Трудоемкость алгоритма: О(N), N - количество элементов.
-     * Ресурсоемкость алгоритма: O(N).
      */
     @NotNull
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        return subSetWithFlags(fromElement, true, last(), true);
+        // TODO
+        throw new NotImplementedError();
     }
 
     @Override

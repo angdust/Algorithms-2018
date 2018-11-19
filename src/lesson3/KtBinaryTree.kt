@@ -1,17 +1,36 @@
 package lesson3
 
-import java.util.SortedSet
+import java.util.*
 import kotlin.NoSuchElementException
 
-// Attention: comparable supported but comparator is not
-class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
+class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), CheckableSortedSet<T> {
+
+    private constructor(node: Node<T>?, fromElement: T?, toElement: T?) : this() {
+        this.root = node
+        this.first = fromElement
+        this.last = toElement
+    }
 
     private var root: Node<T>? = null
 
+    private var first: T? = null
+    private var last: T? = null
+
+
     override var size = 0
         private set
+        get() {
+            var result = 0
+            for (node in this) {
+                if (isValueCorrect(node))
+                    result++
+            }
+            return result
+        }
 
-    private class Node<T>(val value: T) {
+    class Node<T>(val value: T) {
+
+        var parent: Node<T>? = null
 
         var left: Node<T>? = null
 
@@ -25,6 +44,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
             return false
         }
         val newNode = Node(element)
+        newNode.parent = closest
         when {
             closest == null -> root = newNode
             comparison < 0 -> {
@@ -36,7 +56,6 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
                 closest.right = newNode
             }
         }
-        size++
         return true
     }
 
@@ -63,8 +82,11 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
         return closest != null && element.compareTo(closest.value) == 0
     }
 
-    private fun find(value: T): Node<T>? =
-            root?.let { find(it, value) }
+    private fun find(value: T): Node<T>? {
+        if (last != null && last!! <= value) return null
+        if (first != null && first!! > value) return null
+        return root?.let { find(it, value) }
+    }
 
     private fun find(start: Node<T>, value: T): Node<T> {
         val comparison = value.compareTo(start.value)
@@ -75,19 +97,60 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
         }
     }
 
+    private fun Node<T>?.replaceChild(node: Node<T>, newNode: Node<T>?) {
+        newNode?.parent = this
+        when {
+            this == null -> root = newNode
+            this.left?.value?.compareTo(node.value) == 0 -> this.left = newNode
+            else -> this.right = newNode
+        }
+    }
+
+    private fun isValueCorrect(element: T): Boolean = when {
+        (last != null && last!! <= element) -> false
+        (first != null && first!! > element) -> false
+        else -> true
+    }
+
+
     inner class BinaryTreeIterator : MutableIterator<T> {
 
         private var current: Node<T>? = null
+        private var stack: Stack<Node<T>> = Stack()
+
+        init {
+            var node: Node<T>? = root
+            while (node != null) {
+                stack.push(node)
+                node = node.left
+            }
+        }
 
         /**
          * Поиск следующего элемента
          * Средняя
+         * Трудоемкость алгоритма: О(n), n - высота дерева.
+         * Ресурсоемкость алгоритма: O(N), N - количество всех элементов.
          */
         private fun findNext(): Node<T>? {
-            TODO()
+            if (stack.empty()) return null
+            var node: Node<T>? = stack.pop()
+            val result = node
+            if (node!!.right != null) {
+                node = node.right
+                while (node != null) {
+                    stack.push(node)
+                    node = node.left
+                }
+            }
+            return result
         }
 
-        override fun hasNext(): Boolean = findNext() != null
+        override fun hasNext(): Boolean = when {
+            stack.isEmpty() -> false
+            last != null && last!! <= stack.peek().value -> false
+            else -> true
+        }
 
         override fun next(): T {
             current = findNext()
@@ -110,25 +173,39 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     /**
      * Для этой задачи нет тестов (есть только заготовка subSetTest), но её тоже можно решить и их написать
      * Очень сложная
+     * Трудоемкость алгоритма: О(n), n - высота левого дерева.
+     * Ресурсоемкость алгоритва: O(N), N - количество элементов в дереве.
      */
     override fun subSet(fromElement: T, toElement: T): SortedSet<T> {
-        TODO()
+        var node = root
+        while (node?.value!! < toElement && node.left != null) {
+            node = node.left!!
+        }
+        return KtBinaryTree<T>(root, fromElement, toElement)
     }
 
     /**
      * Найти множество всех элементов меньше заданного
      * Сложная
+     * Трудоемкость алгоритма: О(n), n - высота левого дерева.
+     * Ресурсоемкость алгоритва: O(N), N - количество элементов в дереве.
      */
     override fun headSet(toElement: T): SortedSet<T> {
-        TODO()
+        var node = root
+        while (node?.value!! < toElement && node.left != null) {
+            node = node.left!!
+        }
+        return KtBinaryTree<T>(root, null, toElement)
     }
 
     /**
      * Найти множество всех элементов больше или равных заданного
      * Сложная
+     * Трудоемкость алгоритма: О(1)
+     * Ресурсоемкость алгоритва: O(N), N - количество элементов в дереве.
      */
     override fun tailSet(fromElement: T): SortedSet<T> {
-        TODO()
+        return KtBinaryTree<T>(root, fromElement, null)
     }
 
     override fun first(): T {
